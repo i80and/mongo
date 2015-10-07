@@ -30,6 +30,7 @@
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
+#include <stdlib.h>
 #include "mongo/platform/atomic_word.h"
 #include "mongo/base/string_data.h"
 #include "mongo/util/allocator.h"
