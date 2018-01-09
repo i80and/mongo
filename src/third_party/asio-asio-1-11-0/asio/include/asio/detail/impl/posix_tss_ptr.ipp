@@ -17,6 +17,7 @@
 
 #include "asio/detail/config.hpp"
 
+#define ASIO_HAS_PTHREADS
 #if defined(ASIO_HAS_PTHREADS)
 
 #include "asio/detail/posix_tss_ptr.hpp"

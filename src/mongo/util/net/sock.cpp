@@ -152,13 +152,7 @@ void disableNagle(int sock) {
 void disableNagle(int sock) {
     int x = 1;
 
-#ifdef SOL_TCP
-    int level = SOL_TCP;
-#else
-    int level = SOL_SOCKET;
-#endif
-
-    if (setsockopt(sock, level, TCP_NODELAY, (char*)&x, sizeof(x)))
+    if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&x, sizeof(x)))
         error() << "disableNagle failed: " << errnoWithDescription() << endl;
 
 #ifdef SO_KEEPALIVE

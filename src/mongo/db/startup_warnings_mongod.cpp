@@ -301,7 +301,7 @@ void logMongodStartupWarnings(const StorageGlobalParams& storageParams,
     }
 
 // Solaris does not have RLIMIT_NPROC & RLIMIT_MEMLOCK, these are exposed via getrctl(2) instead
-#ifndef __sun
+#if !defined(__sun) && !defined(__HAIKU__)
     // Check # of processes >= # of files/2
     // Check we can lock at least 16 pages for the SecureAllocator
     const double filesToProcsRatio = 2.0;

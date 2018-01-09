@@ -60,6 +60,8 @@ elif env.TargetOSIs('freebsd'):
     env.Append(CPPPATH=["build_freebsd"])
 elif env.TargetOSIs('openbsd'):
     env.Append(CPPPATH=["build_openbsd"])
+elif env.TargetOSIs('haiku'):
+    env.Append(CPPPATH=["build_haiku"])
 elif env.TargetOSIs('linux'):
     env.Append(CPPPATH=["build_linux"])
     env.Append(CPPDEFINES=["_GNU_SOURCE"])

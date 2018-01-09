@@ -84,6 +84,19 @@ js::GetNativeStackBaseImpl()
         context.uc_stack.ss_size;
 }
 
+#elif defined(__HAIKU__)
+
+#include <kernel/OS.h>
+
+void*
+js::GetNativeStackBaseImpl()
+{
+    thread_info info;
+    status_t status = get_thread_info(find_thread(NULL), &info);
+    MOZ_ASSERT(status == B_OK);
+    return info.stack_base;
+}
+
 #else /* XP_UNIX */
 
 void*

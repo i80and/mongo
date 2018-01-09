@@ -34,6 +34,12 @@
 
 #endif
 
+#if defined(__HAIKU__)
+
+#include <kernel/OS.h>
+
+#endif
+
 namespace js {
 namespace gc {
 
@@ -604,7 +610,7 @@ MarkPagesUnused(void* p, size_t size)
         return false;
 
     MOZ_ASSERT(OffsetFromAligned(p, pageSize) == 0);
-    int result = madvise(p, size, MADV_DONTNEED);
+    int result = posix_madvise(p, size, POSIX_MADV_DONTNEED);
     return result != -1;
 }
 
@@ -621,11 +627,19 @@ MarkPagesInUse(void* p, size_t size)
 size_t
 GetPageFaultCount()
 {
+#if defined(__HAIKU__)
+    system_info info;
+    status_t status = get_system_info(&info);
+    if (status != B_OK)
+        return 0;
+    return info.page_faults;
+#else
     struct rusage usage;
     int err = getrusage(RUSAGE_SELF, &usage);
     if (err)
         return 0;
     return usage.ru_majflt;
+#endif
 }
 
 void*

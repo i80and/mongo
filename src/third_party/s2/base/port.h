@@ -75,6 +75,10 @@ typedef unsigned long ulong;
 // _BIG_ENDIAN
 #include <machine/endian.h>
 
+#elif defined __HAIKU__
+
+#include <support/ByteOrder.h>
+
 #elif defined OS_SOLARIS
 
 // _BIG_ENDIAN
@@ -134,6 +138,10 @@ typedef uint16_t u_int16_t;
 #define bswap_16(x) bswap16(x)
 #define bswap_32(x) bswap32(x)
 #define bswap_64(x) bswap64(x)
+#elif defined __HAIKU__
+#define bswap_16(x) B_SWAP_INT16(x)
+#define bswap_32(x) B_SWAP_INT32(x)
+#define bswap_64(x) B_SWAP_INT64(x)
 #elif defined __OpenBSD__
 #include <sys/endian.h>
 #define bswap_16(x) swap16(x)

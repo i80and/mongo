@@ -122,7 +122,7 @@ public:
 } pageAlignTest;
 }
 
-#if defined(__sun)
+#if defined(__sun) || defined(__HAIKU__)
 MAdvise::MAdvise(void*, unsigned, Advice) {}
 MAdvise::~MAdvise() {}
 #else
@@ -188,7 +188,7 @@ void* MemoryMappedFile::map(const char* filename, unsigned long long& length, in
     }
 
 
-#if !defined(__sun)
+#if !defined(__sun) && !defined(__HAIKU__)
     if (options & SEQUENTIAL) {
         if (madvise(view, length, MADV_SEQUENTIAL)) {
             warning() << "map: madvise failed for " << filename << ' ' << errnoWithDescription()
@@ -238,7 +238,7 @@ void* MemoryMappedFile::createPrivateMap() {
 }
 
 void* MemoryMappedFile::remapPrivateView(void* oldPrivateAddr) {
-#if defined(__sun)  // SERVER-8795
+#if defined(__sun) || defined(__HAIKU__)  // SERVER-8795
     LockMongoFilesExclusive lockMongoFiles;
 #endif
 

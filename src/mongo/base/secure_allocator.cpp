@@ -148,20 +148,20 @@ void* systemAllocate(std::size_t bytes) {
         fassertFailed(28831);
     }
 
-    if (mlock(ptr, bytes) != 0) {
-        auto str = errnoWithPrefix("Failed to mlock");
-        severe() << str;
-        fassertFailed(28832);
-    }
+    // if (mlock(ptr, bytes) != 0) {
+    //     auto str = errnoWithPrefix("Failed to mlock");
+    //     severe() << str;
+    //     fassertFailed(28832);
+    // }
 
     return ptr;
 }
 
 void systemDeallocate(void* ptr, std::size_t bytes) {
-    if (munlock(ptr, bytes) != 0) {
-        severe() << errnoWithPrefix("Failed to munlock");
-        fassertFailed(28833);
-    }
+    // if (munlock(ptr, bytes) != 0) {
+    //     severe() << errnoWithPrefix("Failed to munlock");
+    //     fassertFailed(28833);
+    // }
 
     if (munmap(ptr, bytes) != 0) {
         severe() << errnoWithPrefix("Failed to munmap");

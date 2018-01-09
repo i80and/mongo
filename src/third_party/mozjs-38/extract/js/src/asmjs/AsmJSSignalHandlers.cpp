@@ -197,6 +197,26 @@ class AutoSetHandlingSignal
 # else
 #  define R15_sig(p) ((p)->uc_mcontext.mc_r15)
 # endif
+#elif defined(__HAIKU__)
+# define XMM_sig(p,i) (((p)->uc_mcontext.fpu).xmm.xmm##i)
+# define EIP_sig(p) ((p)->uc_mcontext.mc_eip)
+# define RIP_sig(p) ((p)->uc_mcontext.rip)
+# define RAX_sig(p) ((p)->uc_mcontext.rax)
+# define RCX_sig(p) ((p)->uc_mcontext.rcx)
+# define RDX_sig(p) ((p)->uc_mcontext.rdx)
+# define RBX_sig(p) ((p)->uc_mcontext.rbx)
+# define RSP_sig(p) ((p)->uc_mcontext.rsp)
+# define RBP_sig(p) ((p)->uc_mcontext.rbp)
+# define RSI_sig(p) ((p)->uc_mcontext.rsi)
+# define RDI_sig(p) ((p)->uc_mcontext.rdi)
+# define R8_sig(p) ((p)->uc_mcontext.r8)
+# define R9_sig(p) ((p)->uc_mcontext.r9)
+# define R10_sig(p) ((p)->uc_mcontext.r10)
+# define R11_sig(p) ((p)->uc_mcontext.r11)
+# define R12_sig(p) ((p)->uc_mcontext.r12)
+# define R13_sig(p) ((p)->uc_mcontext.r13)
+# define R14_sig(p) ((p)->uc_mcontext.r14)
+# define R15_sig(p) ((p)->uc_mcontext.r15)
 #elif defined(XP_MACOSX)
 # define EIP_sig(p) ((p)->uc_mcontext->__ss.__eip)
 # define RIP_sig(p) ((p)->uc_mcontext->__ss.__rip)
@@ -221,6 +241,8 @@ class AutoSetHandlingSignal
 # elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
        defined(__NetBSD__) || defined(__OpenBSD__)
 #  include <machine/fpu.h> // for struct savefpu/fxsave64
+# elif defined(__HAIKU__)
+#  include <arch/x86_64/fpu.h>
 # endif
 #endif
 

@@ -46,6 +46,8 @@ def get_running_os_name():
         running_os = 'freebsd'
     elif running_os.startswith('openbsd'):
         running_os = 'openbsd'
+    elif running_os.startswith('haiku'):
+        running_os = 'haiku'
     elif running_os == 'sunos5':
         running_os = 'solaris'
     elif running_os == 'win32':
@@ -61,7 +63,7 @@ def env_get_os_name_wrapper(self):
 
 def is_os_raw(target_os, os_list_to_check):
     okay = False
-    posix_os_list = [ 'linux', 'openbsd', 'freebsd', 'osx', 'solaris' ]
+    posix_os_list = [ 'linux', 'openbsd', 'freebsd', 'osx', 'haiku', 'solaris' ]
 
     for p in os_list_to_check:
         if p == 'posix' and target_os in posix_os_list:
@@ -978,6 +980,7 @@ os_macros = {
     "solaris": "__sun",
     "freebsd": "__FreeBSD__",
     "openbsd": "__OpenBSD__",
+    "haiku": "__HAIKU__",
     "osx": "__APPLE__",
     "linux": "__linux__",
 }
@@ -1262,7 +1265,7 @@ if env['_LIBDEPS'] == '$_LIBDEPS_OBJS':
 
 libdeps.setup_environment(env, emitting_shared=(link_model.startswith("dynamic")))
 
-if env.TargetOSIs('linux', 'freebsd', 'openbsd'):
+if env.TargetOSIs('linux', 'freebsd', 'openbsd', 'haiku'):
     env['LINK_LIBGROUP_START'] = '-Wl,--start-group'
     env['LINK_LIBGROUP_END'] = '-Wl,--end-group'
     env['LINK_WHOLE_ARCHIVE_START'] = '-Wl,--whole-archive'
@@ -1296,6 +1299,10 @@ elif env.TargetOSIs('freebsd'):
 
 elif env.TargetOSIs('openbsd'):
     env.Append( LIBS=[ "kvm" ] )
+
+elif env.TargetOSIs('haiku'):
+    env.Append( LIBS=[ "network" ] )
+    env.Append( CPPDEFINES=[ "_BSD_SOURCE" ] )
 
 elif env.TargetOSIs('windows'):
     dynamicCRT = has_option("dynamic-windows")
@@ -1452,7 +1459,6 @@ if env.TargetOSIs('posix'):
                          "-fPIC",
                          "-fno-strict-aliasing",
                          "-ggdb",
-                         "-pthread",
                          "-Wall",
                          "-Wsign-compare",
                          "-Wno-unknown-pragmas",
@@ -1462,8 +1468,11 @@ if env.TargetOSIs('posix'):
         if not has_option("disable-warnings-as-errors"):
             env.Append( CCFLAGS=["-Werror"] )
 
+    if not env.TargetOSIs("haiku"):
+        env.Append( CCFLAGS=["-pthread"] )
+        env.Append( LINKFLAGS=["-fPIC", "-pthread"] )
+
     env.Append( CXXFLAGS=["-Wnon-virtual-dtor", "-Woverloaded-virtual"] )
-    env.Append( LINKFLAGS=["-fPIC", "-pthread"] )
 
     # SERVER-9761: Ensure early detection of missing symbols in dependent libraries at program
     # startup.
@@ -1476,6 +1485,8 @@ if env.TargetOSIs('posix'):
     else:
         env.Append( LINKFLAGS=["-Wl,-z,now"] )
         env.Append( SHLINKFLAGS=["-Wl,-z,now"] )
+
+    if not env.TargetOSIs('haiku'):
         env.Append( LINKFLAGS=["-rdynamic"] )
 
     env.Append( LIBS=[] )
@@ -1887,8 +1898,8 @@ def doConfigure(myenv):
         conf.Finish()
 
     if not myenv.ToolchainIs('msvc'):
-        if not AddToCXXFLAGSIfSupported(myenv, '-std=c++11'):
-            myenv.ConfError('Compiler does not honor -std=c++11')
+        if not AddToCXXFLAGSIfSupported(myenv, '-std=c++14'):
+            myenv.ConfError('Compiler does not honor -std=c++14')
         if not AddToCFLAGSIfSupported(myenv, '-std=c99'):
             myenv.ConfError("C++11 mode selected for C++ files, but can't enable C99 for C files")
 
@@ -2561,7 +2572,7 @@ def doConfigure(myenv):
         myenv.ConfError("Couldn't find SASL header/libraries")
 
     # requires ports devel/libexecinfo to be installed
-    if env.TargetOSIs('freebsd', 'openbsd'):
+    if env.TargetOSIs('freebsd', 'openbsd', 'haiku'):
         if not conf.CheckLib("execinfo"):
             myenv.ConfError("Cannot find libexecinfo, please install devel/libexecinfo.")
 
